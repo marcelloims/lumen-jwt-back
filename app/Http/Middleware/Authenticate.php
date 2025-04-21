@@ -37,11 +37,22 @@ class Authenticate
      */
     public function handle($request, Closure $next, $guard = null)
     {
-        // if ($this->auth->guard($guard)->guest()) {
-        //     return response('Unauthorized.', 401);
-        // }
+        $headers = [
+            'Access-Control-Allow-Origin'      => '*',
+            'Access-Control-Allow-Methods'     => 'POST, GET, OPTIONS, PUT, DELETE',
+            'Access-Control-Allow-Credentials' => 'true',
+            'Access-Control-Max-Age'           => '86400',
+            'Access-Control-Allow-Headers'     => 'Content-Type, Authorization, X-Requested-With'
+        ];
 
-        // return $next($request);
+        if ($request->isMethod('OPTIONS')) {
+            return response()->json('{"method":"OPTIONS"}', 200, $headers);
+        }
+
+        $response = $next($request);
+        foreach ($headers as $key => $value) {
+            $response->header($key, $value);
+        }
 
         try {
             $user = JWTAuth::parseToken()->authenticate();
@@ -54,6 +65,6 @@ class Authenticate
                 return response()->json(['status' => 'Authorization Token not found'], 401);
             }
         }
-        return $next($request);
+        return $response;
     }
 }

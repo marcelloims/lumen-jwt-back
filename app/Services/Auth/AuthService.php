@@ -43,7 +43,7 @@ class AuthService
             if (!$token = Auth()->attempt($validator->validated())) {
                 return [
                     "code"      => Response::HTTP_UNAUTHORIZED,
-                    "message"   => 'Unauthorized',
+                    "message"   => 'password incorrect!',
                     "process"   => "login"
                 ];
             }
